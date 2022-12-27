@@ -6,9 +6,9 @@ maintainer: ["Samuel Li"]
 authors: ["Samuel Li"]
 license: "0BSD"
 tags: ["unification" "prolog" "backtracking" "prolog variables"]
-homepage: "https://github.com/username/reponame"
+homepage: "https://github.com/lasamlai/unification"
 doc: "https://url/to/documentation"
-bug-reports: "https://github.com/username/reponame/issues"
+bug-reports: "https://github.com/lasamlai/unification/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.5"}
@@ -28,4 +28,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/username/reponame.git"
+dev-repo: "git+https://github.com/lasamlai/unification.git"
