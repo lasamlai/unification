@@ -1,0 +1,17 @@
+(library
+  (public_name unification)
+  (name unification)
+  (libraries href)
+  (modules unification))
+
+(library
+  (name href)
+  (public_name unification.href)
+  (libraries story)
+  (modules href))
+
+(library
+  (name story)
+  (public_name unification.story)
+  (modules story))
+
