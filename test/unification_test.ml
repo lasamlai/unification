@@ -1,19 +1,19 @@
 open Unification
 
-module T = struct
+module MyTerm = struct
+  (** Term description without unifying-variables. *)
   type term = Var of string | Impl of term * term | Box of term
+
+  (** Description of terms with unifying variables. *)
   type 'a uterm = UVar of string | UImpl of 'a * 'a | UBox of 'a
 
-  let union union ta tb =
-    match (ta, tb) with
-    | UVar sa, UVar sb -> sa = sb
-    | UImpl (ta1, ta2), UImpl (tb1, tb2) -> union ta1 tb1 && union ta2 tb2
-    | UBox ta, UBox tb -> union ta tb
-    | _ -> false
-
+  (** `args t` is a list of children of term `t`. *)
   let args (t : 'a uterm) : 'a list =
     match t with UVar _ -> [] | UImpl (t1, t2) -> [ t1; t2 ] | UBox t -> [ t ]
 
+  (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
+   *  `t` is grounded version of term `ut`.
+   *  `f x` is the term assigned to the variable `x` if `x` is grounded. *)
   let build get (t : 'a uterm) : term option =
     match t with
     | UVar s -> Some (Var s)
@@ -22,10 +22,19 @@ module T = struct
         | Some t1, Some t2 -> Some (Impl (t1, t2))
         | _ -> None)
     | UBox t -> ( match get t with Some t -> Some (Box t) | None -> None)
+
+  (** `union u t1 t2` tries to unify the terms `t1` and `t2` and returns `true` if successful, `false` otherwise.
+   *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
+  let union union ta tb =
+    match (ta, tb) with
+    | UVar sa, UVar sb -> sa = sb
+    | UImpl (ta1, ta2), UImpl (tb1, tb2) -> union ta1 tb1 && union ta2 tb2
+    | UBox ta, UBox tb -> union ta tb
+    | _ -> false
 end
 
-module Uni = Unification (T)
-open T;;
+module Uni = Unification (MyTerm)
+open MyTerm;;
 
 assert (
   let open Uni in
@@ -174,7 +183,7 @@ assert (
 
 (* Test Union-Find with values *)
 assert (
-  let open T in
+  let open MyTerm in
   let v1 = Uni.gen_var () in
   let v2 = Uni.gen_var () in
   let v3 = Uni.gen_var () in
@@ -185,7 +194,7 @@ assert (
   assert (Uni.get v3 = None);
   assert (Uni.get v4 = None);
 
-  let v : 'a T.uterm = UVar "Foo" in
+  let v : 'a MyTerm.uterm = UVar "Foo" in
 
   assert (Uni.set_value v1 v);
 

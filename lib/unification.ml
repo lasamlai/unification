@@ -2,11 +2,22 @@ open Href
 
 module type Term = sig
   type term
+  (** Term description without unifying-variables. *)
+
   type 'a uterm
+  (** Description of terms with unifying variables. *)
+
+  val args : 'a uterm -> 'a list
+  (** `args t` is a list of children of term `t`. *)
+
+  val build : ('a -> term option) -> 'a uterm -> term option
+  (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
+   *  `t` is grounded version of term `ut`.
+   *  `f x` is the term assigned to the variable `x` if `x` is grounded. *)
 
   val union : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
-  val build : ('a -> term option) -> 'a uterm -> term option
-  val args : 'a uterm -> 'a list
+  (** `union u t1 t2` tries to unify the terms `t1` and `t2` and returns `true` if successful, `false` otherwise.
+   *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
 end
 
 module Unification (Unit : Term) : sig
