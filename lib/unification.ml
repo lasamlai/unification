@@ -4,9 +4,9 @@ module type Term = sig
   type term
   type 'a uterm
 
-  val ind_and : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
+  val union : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
   val build : ('a -> term option) -> 'a uterm -> term option
-  val to_list : 'a uterm -> 'a list
+  val args : 'a uterm -> 'a list
 end
 
 module Unification (Unit : Term) : sig
@@ -48,15 +48,15 @@ end = struct
     let _, _, oval = find v in
     oval
 
-  let rec not_in_fv (to_list : var Unit.uterm -> 'a list) (x : var)
+  let rec not_in_fv (args : var Unit.uterm -> 'a list) (x : var)
       (term : var Unit.uterm) =
     List.for_all
       (fun v ->
         x != v
         && Option.fold ~none:true
-             ~some:(fun t -> not_in_fv to_list x t)
+             ~some:(fun t -> not_in_fv args x t)
              (get_value v))
-      (to_list term)
+      (args term)
 
   let union v1 v2 : bool =
     let rec union v1 v2 : bool =
@@ -68,8 +68,8 @@ end = struct
         match (g1, oval1, g2, oval2) with
         | _, None, _, None -> (None, true)
         | _, Some x, vv, None | vv, None, _, Some x ->
-            (Some x, not_in_fv Unit.to_list vv x)
-        | _, Some x, _, Some y -> (Some x, Unit.ind_and union x y)
+            (Some x, not_in_fv Unit.args vv x)
+        | _, Some x, _, Some y -> (Some x, Unit.union union x y)
       in
       if unified then (
         let size = size1 + size2 in
@@ -90,7 +90,7 @@ end = struct
     ||
     let connected =
       match (oval1, oval2) with
-      | Some x, Some y when Unit.ind_and equal x y -> Some x
+      | Some x, Some y when Unit.union equal x y -> Some x
       | _ -> None
     in
     let equal = connected <> None in
@@ -110,7 +110,7 @@ end = struct
     | idx, size, None ->
         idx := Top (size, Some v);
         true
-    | _, _, Some value -> Unit.ind_and union value v
+    | _, _, Some value -> Unit.union union value v
 
   let rec get (var : var) : Unit.term option =
     match get_value var with Some t -> Unit.build get t | None -> None

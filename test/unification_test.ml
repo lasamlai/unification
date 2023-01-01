@@ -4,14 +4,14 @@ module T = struct
   type term = Var of string | Impl of term * term | Box of term
   type 'a uterm = UVar of string | UImpl of 'a * 'a | UBox of 'a
 
-  let ind_and union ta tb =
+  let union union ta tb =
     match (ta, tb) with
     | UVar sa, UVar sb -> sa = sb
     | UImpl (ta1, ta2), UImpl (tb1, tb2) -> union ta1 tb1 && union ta2 tb2
     | UBox ta, UBox tb -> union ta tb
     | _ -> false
 
-  let to_list (t : 'a uterm) : 'a list =
+  let args (t : 'a uterm) : 'a list =
     match t with UVar _ -> [] | UImpl (t1, t2) -> [ t1; t2 ] | UBox t -> [ t ]
 
   let build get (t : 'a uterm) : term option =
