@@ -30,7 +30,7 @@ end = struct
   let current = ref begining
   let get_current () = !current
 
-  let is_corect_point chp =
+  let is_valid_checkpoint chp =
     let rec aux x =
       x == chp || match !x with Update x -> aux x | _ -> assert false
     in
@@ -45,7 +45,7 @@ end = struct
     acc
 
   let fail chp =
-    assert (is_corect_point chp);
+    assert (is_valid_checkpoint chp);
     let rec aux ok ptr =
       match !ptr with
       | Current -> ptr := Rollback ok
@@ -59,7 +59,7 @@ end = struct
     current := chp
 
   let cut chp =
-    assert (is_corect_point chp);
+    assert (is_valid_checkpoint chp);
     let rec aux ok ptr =
       match !ptr with
       | Current -> ptr := Commit ok
