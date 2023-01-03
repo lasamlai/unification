@@ -20,10 +20,13 @@ module type Term = sig
    *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
 
   val equal : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
-  (** `equal u t1 t2` is `true` if terms are equal, `false` otherwise.
-   *  `u x1 x2` is `true` if the variables are unified, `false` otherwise.
+  (** `equal eq t1 t2` is `true` if terms are equal, `false` otherwise.
+   *  `eq x1 x2` is `true` if the variables are equal, `false` otherwise.
+   *
+   *  Note: Two variables are equal if they contain equal terms or have been unified.
    *  This should work like `==/2` in the Prolog.
-   *  (See: https://www.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2) *)
+   *
+   *  Warning: The information that two terms are equal will be cached in the `Unification` structure. *)
 end
 
 module Unification (Unit : Term) : sig
