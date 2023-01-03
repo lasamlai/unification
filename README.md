@@ -20,8 +20,8 @@ module MyTerm = struct
   (** Description of terms with unifying variables. *)
   type 'a uterm = UVar of string | UImpl of 'a * 'a | UBox of 'a
 
-  (** `args t` is a list of children of term `t`. *)
-  let args (t : 'a uterm) : 'a list =
+  (** `children_of t` is a list of children of term `t`. *)
+  let children_of (t : 'a uterm) : 'a list =
     match t with UVar _ -> [] | UImpl (t1, t2) -> [ t1; t2 ] | UBox t -> [ t ]
 
   (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
@@ -44,6 +44,17 @@ module MyTerm = struct
     | UImpl (ta1, ta2), UImpl (tb1, tb2) -> union ta1 tb1 && union ta2 tb2
     | UBox ta, UBox tb -> union ta tb
     | _ -> false
+
+  (** `equal u t1 t2` is `true` if terms are equal, `false` otherwise.
+   *  `u x1 x2` is `true` if the variables are unified, `false` otherwise.
+   *  This should work like `==/2` in the Prolog.
+   *  (See: https://www.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2) *)
+  let equal equal ta tb =
+    match (ta, tb) with
+    | UVar sa, UVar sb -> sa = sb
+    | UImpl (ta1, ta2), UImpl (tb1, tb2) -> equal ta1 tb1 && equal ta2 tb2
+    | UBox ta, UBox tb -> equal ta tb
+    | _ -> false
 end
 ```
 
@@ -57,8 +68,8 @@ module type Term = sig
   type 'a uterm
   (** Description of terms with unifying variables. *)
 
-  val args : 'a uterm -> 'a list
-  (** `args t` is a list of children of term `t`. *)
+  val children_of : 'a uterm -> 'a list
+  (** `children_of t` is a list of children of term `t`. *)
 
   val build : ('a -> term option) -> 'a uterm -> term option
   (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
@@ -68,6 +79,12 @@ module type Term = sig
   val union : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
   (** `union u t1 t2` tries to unify the terms `t1` and `t2` and returns `true` if successful, `false` otherwise.
    *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
+
+  val equal : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
+  (** `equal u t1 t2` is `true` if terms are equal, `false` otherwise.
+   *  `u x1 x2` is `true` if the variables are unified, `false` otherwise.
+   *  This should work like `==/2` in the Prolog.
+   *  (See: https://www.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2) *)
 end
 ```
 

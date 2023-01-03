@@ -7,8 +7,8 @@ module type Term = sig
   type 'a uterm
   (** Description of terms with unifying variables. *)
 
-  val args : 'a uterm -> 'a list
-  (** `args t` is a list of children of term `t`. *)
+  val children_of : 'a uterm -> 'a list
+  (** `children_of t` is a list of children of term `t`. *)
 
   val build : ('a -> term option) -> 'a uterm -> term option
   (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
@@ -18,6 +18,12 @@ module type Term = sig
   val union : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
   (** `union u t1 t2` tries to unify the terms `t1` and `t2` and returns `true` if successful, `false` otherwise.
    *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
+
+  val equal : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
+  (** `equal u t1 t2` is `true` if terms are equal, `false` otherwise.
+   *  `u x1 x2` is `true` if the variables are unified, `false` otherwise.
+   *  This should work like `==/2` in the Prolog.
+   *  (See: https://www.swi-prolog.org/pldoc/doc_for?object=(%3D%3D)/2) *)
 end
 
 module Unification (Unit : Term) : sig
@@ -59,15 +65,15 @@ end = struct
     let _, _, oval = find v in
     oval
 
-  let rec not_in_fv (args : var Unit.uterm -> 'a list) (x : var)
+  let rec not_in_fv (children_of : var Unit.uterm -> 'a list) (x : var)
       (term : var Unit.uterm) =
     List.for_all
       (fun v ->
         x != v
         && Option.fold ~none:true
-             ~some:(fun t -> not_in_fv args x t)
+             ~some:(fun t -> not_in_fv children_of x t)
              (get_value v))
-      (args term)
+      (children_of term)
 
   let union v1 v2 : bool =
     let rec union v1 v2 : bool =
@@ -79,7 +85,7 @@ end = struct
         match (g1, oval1, g2, oval2) with
         | _, None, _, None -> (None, true)
         | _, Some x, vv, None | vv, None, _, Some x ->
-            (Some x, not_in_fv Unit.args vv x)
+            (Some x, not_in_fv Unit.children_of vv x)
         | _, Some x, _, Some y -> (Some x, Unit.union union x y)
       in
       if unified then (
@@ -101,7 +107,7 @@ end = struct
     ||
     let connected =
       match (oval1, oval2) with
-      | Some x, Some y when Unit.union equal x y -> Some x
+      | Some x, Some y when Unit.equal equal x y -> Some x
       | _ -> None
     in
     let equal = connected <> None in
