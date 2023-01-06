@@ -19,7 +19,7 @@
   (name unification)
   (synopsis "Variables, unification and backtracking like in Prolog.")
   (description "Implementation of the unification algorithm with backtracking.")
-  (depends ocaml dune)
+  (depends (ocaml (>= 4.08.0)) dune)
   (tags
     (unification prolog backtracking "prolog variables")))
 

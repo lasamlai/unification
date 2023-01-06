@@ -10,7 +10,7 @@ homepage: "https://github.com/lasamlai/unification"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/lasamlai/unification/issues"
 depends: [
-  "ocaml"
+  "ocaml" {>= "4.08.0"}
   "dune" {>= "3.5"}
   "odoc" {with-doc}
 ]
