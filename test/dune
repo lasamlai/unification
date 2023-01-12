@@ -1,7 +1,12 @@
 (test
- (name unification_test)
+ (name example1)
  (libraries unification)
- (modules unification_test))
+ (modules example1))
+
+(test
+ (name example2)
+ (libraries unification)
+ (modules example2))
 
 (test
  (name href_test)

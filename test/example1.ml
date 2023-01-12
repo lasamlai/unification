@@ -394,4 +394,4 @@ assert (
   true)
 ;;
 
-print_endline "[unification] OK"
+print_endline "[example 1] OK"
