@@ -394,4 +394,12 @@ assert (
   true)
 ;;
 
+(* Unallow recursive terms in `set_value` *)
+assert (
+  let x = Uni.gen_var () in
+  assert (not @@ Uni.set_value x (UBox x));
+
+  Uni.get x = None)
+;;
+
 print_endline "[example 1] OK"

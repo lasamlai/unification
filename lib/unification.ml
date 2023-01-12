@@ -42,6 +42,7 @@ module Unification (Unit : Term) : sig
   type var
 
   val gen_var : unit -> var
+  val var_of_uterm : var Unit.uterm -> var
   val union : var -> var -> bool
   val equal : var -> var -> bool
   val is_var : var -> bool
@@ -55,6 +56,7 @@ end = struct
   and var = node href
 
   let gen_var () : var = href (Top (1, None))
+  let var_of_uterm t : var = href (Top (1, Some t))
 
   let rec find (v : var) : var * int * var Unit.uterm option =
     match !v with
@@ -125,12 +127,7 @@ end = struct
     let _, _, oval = find var in
     oval = None
 
-  let set_value var v =
-    match find var with
-    | idx, size, None ->
-        idx := Top (size, Some v);
-        true
-    | _, _, Some value -> Unit.union union value v
+  let set_value var v = union var (var_of_uterm v)
 
   let rec get (var : var) : Unit.term option =
     match get_value var with Some t -> Unit.build get t | None -> None
