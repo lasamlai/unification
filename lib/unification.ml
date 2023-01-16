@@ -8,25 +8,25 @@ module type Term = sig
   (** Description of terms with unifying variables. *)
 
   val children_of : 'a uterm -> 'a list
-  (** `children_of t` is a list of children of term `t`. *)
+  (** [children_of t] is a list of children of term [t]. *)
 
   val build : ('a -> term option) -> 'a uterm -> term option
-  (** `build f ut` is `Some t` if `ut` is a grounded term and `None` otherwise.
-   *  `t` is grounded version of term `ut`.
-   *  `f x` is the term assigned to the variable `x` if `x` is grounded. *)
+  (** [build f ut] is [Some t] if [ut] is a grounded term and [None] otherwise.
+      [t] is grounded version of term [ut].
+      [f x] is the term assigned to the variable [x] if [x] is grounded. *)
 
   val union : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
-  (** `union u t1 t2` tries to unify the terms `t1` and `t2` and returns `true` if successful, `false` otherwise.
-   *  `u x1 x2` tries to unify the variables `x1` and `x2` and returns `true` if successful, `false` otherwise. *)
+  (** [union u t1 t2] tries to unify the terms [t1] and [t2] and returns [true] if successful, [false] otherwise.
+      [u x1 x2] tries to unify the variables [x1] and [x2] and returns [true] if successful, [false] otherwise. *)
 
   val equal : ('a -> 'a -> bool) -> 'a uterm -> 'a uterm -> bool
-  (** `equal eq t1 t2` is `true` if terms are equal, `false` otherwise.
-   *  `eq x1 x2` is `true` if the variables are equal, `false` otherwise.
-   *
-   *  Note: Two variables are equal if they contain equal terms or have been unified.
-   *  This should work like `==/2` in the Prolog.
-   *
-   *  Warning: The information that two terms are equal will be cached in the `Unification` structure. *)
+  (** [equal eq t1 t2] is [true] if terms are equal, [false] otherwise.
+      [eq x1 x2] is [true] if the variables are equal, [false] otherwise.
+
+      {b Note}: Two variables are equal if they contain equal terms or have been unified.
+      This should work like [==/2] in the Prolog.
+
+      {b Warning}: The information that two terms are equal will be cached in the {!module:Unification} structure. *)
 end
 
 module Unification (Unit : Term) : sig
@@ -40,15 +40,38 @@ module Unification (Unit : Term) : sig
   val cut : state -> unit
 
   type var
+  (** The type of variables. *)
 
   val gen_var : unit -> var
+  (** [gen_var ()] creates a new free variable. *)
+
   val var_of_uterm : var Unit.uterm -> var
+  (** [var_of_uterm u] creates a new variable, which is unified with the term [u]. *)
+
   val union : var -> var -> bool
+  (** [union x1 x2] tries to unify the variables [x1] and [x2] and returns [true] if successful, [false] otherwise. *)
+
   val equal : var -> var -> bool
+  (** [equal x1 x2] is [true] if variables are equal, [false] otherwise.
+
+      {b Note}: Two variables are equal if they contain equal terms or have been unified.
+      This should work like [==/2] in the Prolog.
+
+      {b Warning}: The information that two terms are equal will be cached in the [Unification] structure. *)
+
   val is_var : var -> bool
+  (** [is_var x] is [true] if the variable [x] contains no term, [false] otherwise.
+
+      {b Note}: This should work like [var/1] in Prolog. *)
+
   val set_value : var -> var Unit.uterm -> bool
+  (** [set_value x u] is [union x (var_of_uterm u)]. *)
+
   val get_value : var -> var Unit.uterm option
+  (** [get_value x] is [Some u] if variable contains term, [None] otherwise. *)
+
   val get : var -> Unit.term option
+  (** [get x] is [Some t] if variable contains grounded term, [None] otherwise. *)
 end = struct
   include Href
 
