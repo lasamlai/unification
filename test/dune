@@ -9,9 +9,9 @@
  (modules example2))
 
 (test
- (name href_test)
- (libraries href)
- (modules href_test))
+ (name backtracking_references_test)
+ (libraries backtracking_references)
+ (modules backtracking_references_test))
 
 (test
  (name story_test)

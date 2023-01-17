@@ -1,4 +1,4 @@
-open Href
+open Backtracking_references
 
 module type Term = sig
   type term
@@ -76,7 +76,7 @@ module Var (Unit : Term) : sig
   val get : var -> Unit.term option
   (** [get x] is [Some t] if variable contains grounded term, [None] otherwise. *)
 end = struct
-  include Href
+  include Backtracking_references
 
   type node = Top of int * var Unit.uterm option | Link of var
   and var = node href

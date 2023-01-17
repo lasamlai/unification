@@ -1,6 +1,6 @@
 open Story
 
-module Href : sig
+module Backtracking_references : sig
   type state
 
   exception UseBeforeCreation

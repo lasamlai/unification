@@ -1,14 +1,14 @@
 (library
  (public_name unification)
  (name unification)
- (libraries href)
+ (libraries backtracking_references)
  (modules unification))
 
 (library
- (name href)
- (public_name unification.href)
+ (name backtracking_references)
+ (public_name unification.backtracking_references)
  (libraries story)
- (modules href))
+ (modules backtracking_references))
 
 (library
  (name story)
