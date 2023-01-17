@@ -47,7 +47,7 @@ module MyTerm = struct
     | _ -> false
 end
 
-module Uni = Unification (MyTerm)
+module Uni = Var (MyTerm)
 open MyTerm;;
 
 assert (

@@ -31,17 +31,13 @@ module Ty = struct
     | _ -> false
 end
 
-module UnificationTy = Unification (Ty)
+module VarTy = Var (Ty)
 
 type lam = Var of var | Lam of var * ty * lam | App of lam * lam
 
 module Lam = struct
   type term = lam
-
-  type 'a uterm =
-    | Var of var
-    | Lam of var * UnificationTy.var * 'a
-    | App of 'a * 'a
+  type 'a uterm = Var of var | Lam of var * VarTy.var * 'a | App of 'a * 'a
 
   let children_of (t : 'a uterm) : 'a list =
     match t with
@@ -53,7 +49,7 @@ module Lam = struct
     match t with
     | Var s -> Some (Var s)
     | Lam (x, ty, t12) -> (
-        match (UnificationTy.get ty, get t12) with
+        match (VarTy.get ty, get t12) with
         | Some ty, Some t12 -> Some (Lam (x, ty, t12))
         | _ -> None)
     | App (t1, t2) -> (
@@ -65,7 +61,7 @@ module Lam = struct
     match (ta, tb) with
     | Var sa, Var sb -> sa = sb
     | Lam (x1, ty1, t1), Lam (x2, ty2, t2) when x1 = x2 ->
-        UnificationTy.union ty1 ty2 && union t1 t2
+        VarTy.union ty1 ty2 && union t1 t2
     | App (ta1, ta2), App (tb1, tb2) -> union ta1 tb1 && union ta2 tb2
     | _ -> false
 
@@ -73,16 +69,16 @@ module Lam = struct
     match (ta, tb) with
     | Var sa, Var sb -> sa = sb
     | Lam (x1, ty1, t1), Lam (x2, ty2, t2) when x1 = x2 ->
-        UnificationTy.equal ty1 ty2 && equal t1 t2
+        VarTy.equal ty1 ty2 && equal t1 t2
     | App (ta1, ta2), App (tb1, tb2) -> equal ta1 tb1 && equal ta2 tb2
     | _ -> false
 end
 
-module UnificationLam = Unification (Lam)
+module VarLam = Var (Lam)
 open Ty;;
 
 assert (
-  let open UnificationTy in
+  let open VarTy in
   let x = gen_var () in
   let y = gen_var () in
   let z = gen_var () in
@@ -97,13 +93,13 @@ assert (
 ;;
 
 assert (
-  let open UnificationLam in
+  let open VarLam in
   let x = gen_var () in
-  let y : UnificationTy.var = UnificationTy.gen_var () in
+  let y : VarTy.var = VarTy.gen_var () in
   let z = gen_var () in
 
   assert (set_value x (Var "x"));
-  assert (UnificationTy.set_value y (Var "p"));
+  assert (VarTy.set_value y (Var "p"));
   assert (set_value z (Lam ("x", y, x)));
 
   let (t : lam) = Lam ("x", Var "p", Var "x") in
@@ -112,12 +108,12 @@ assert (
 ;;
 
 assert (
-  let open UnificationLam in
-  let a : UnificationTy.var = UnificationTy.gen_var () in
-  let b : UnificationTy.var = UnificationTy.gen_var () in
+  let open VarLam in
+  let a : VarTy.var = VarTy.gen_var () in
+  let b : VarTy.var = VarTy.gen_var () in
 
-  assert (UnificationTy.set_value a (Var "a"));
-  assert (UnificationTy.set_value b (Var "b"));
+  assert (VarTy.set_value a (Var "a"));
+  assert (VarTy.set_value b (Var "b"));
 
   let f = gen_var () in
   let x = gen_var () in

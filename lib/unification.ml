@@ -29,7 +29,7 @@ module type Term = sig
       {b Warning}: The information that two terms are equal will be cached in the {!module:Unification} structure. *)
 end
 
-module Unification (Unit : Term) : sig
+module Var (Unit : Term) : sig
   type state
 
   exception UseBeforeCreation
@@ -41,6 +41,9 @@ module Unification (Unit : Term) : sig
 
   type var
   (** The type of variables. *)
+
+  type t = var
+  (** The type of variables, but here named as [t] to follow ocaml convention. *)
 
   val gen_var : unit -> var
   (** [gen_var ()] creates a new free variable. *)
@@ -77,6 +80,8 @@ end = struct
 
   type node = Top of int * var Unit.uterm option | Link of var
   and var = node href
+
+  type t = var
 
   let gen_var () : var = href (Top (1, None))
   let var_of_uterm t : var = href (Top (1, Some t))
