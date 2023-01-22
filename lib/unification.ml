@@ -1,7 +1,7 @@
 open Backtracking_references
 open Term
 
-module Var (Unit : Term) : sig
+module type Var = sig
   type state
 
   exception UseBeforeCreation
@@ -10,6 +10,12 @@ module Var (Unit : Term) : sig
   val checkpoint : unit -> state
   val fail : state -> unit
   val cut : state -> unit
+
+  type term
+  (** Term description without unifying-variables. *)
+
+  type 'a uterm
+  (** Description of terms with unifying variables. *)
 
   type var
   (** The type of variables. *)
@@ -20,7 +26,7 @@ module Var (Unit : Term) : sig
   val gen_var : unit -> var
   (** [gen_var ()] creates a new free variable. *)
 
-  val var_of_uterm : var Unit.uterm -> var
+  val var_of_uterm : var uterm -> var
   (** [var_of_uterm u] creates a new variable, which is unified with the term [u]. *)
 
   val union : var -> var -> bool
@@ -39,16 +45,22 @@ module Var (Unit : Term) : sig
 
       {b Note}: This should work like [var/1] in Prolog. *)
 
-  val set_value : var -> var Unit.uterm -> bool
+  val set_value : var -> var uterm -> bool
   (** [set_value x u] is [union x (var_of_uterm u)]. *)
 
-  val get_value : var -> var Unit.uterm option
+  val get_value : var -> var uterm option
   (** [get_value x] is [Some u] if variable contains term, [None] otherwise. *)
 
-  val get : var -> Unit.term option
+  val get : var -> term option
   (** [get x] is [Some t] if variable contains grounded term, [None] otherwise. *)
-end = struct
+end
+
+module Var (Unit : Term) :
+  Var with type term = Unit.term and type 'a uterm = 'a Unit.uterm = struct
   include Backtracking_references
+
+  type term = Unit.term
+  type 'a uterm = 'a Unit.uterm
 
   type node = Top of int * var Unit.uterm option | Link of var
   and var = node href

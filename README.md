@@ -97,7 +97,7 @@ module type Term = sig
 Finally, apply your description to the `Unification.Unification` functor:
 
 ```ocaml
-module Uni = Unification.Unification(MyTerm);;
+module Uni = Unification.Var(MyTerm);;
 ```
 
 You should get a `Uni` module of the following type:
@@ -105,19 +105,23 @@ You should get a `Uni` module of the following type:
 ```ocaml
 module Uni :
   sig
-    type state = Unification.Unification(MyTerm).state
+    type state = Unification.Var(MyTerm).state
     exception UseBeforeCreation
     val get_current : unit -> state
     val checkpoint : unit -> state
     val fail : state -> unit
     val cut : state -> unit
-    type var = Unification.Unification(MyTerm).var
+    type term = MyTerm.term
+    type 'a uterm = 'a MyTerm.uterm
+    type var = Unification.Var(MyTerm).var
+    type t = var
     val gen_var : unit -> var
+    val var_of_uterm : var uterm -> var
     val union : var -> var -> bool
     val equal : var -> var -> bool
     val is_var : var -> bool
-    val set_value : var -> var MyTerm.uterm -> bool
-    val get_value : var -> var MyTerm.uterm option
-    val get : var -> MyTerm.term option
+    val set_value : var -> var uterm -> bool
+    val get_value : var -> var uterm option
+    val get : var -> term option
   end
 ```
