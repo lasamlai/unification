@@ -1,8 +1,19 @@
 (library
  (public_name unification)
  (name unification)
- (libraries backtracking_references)
+ (libraries backtracking_references atomic_term)
  (modules unification))
+
+(library
+ (public_name unification.atomic_term)
+ (name atomic_term)
+ (libraries term)
+ (modules atomic_term))
+
+(library
+ (public_name unification.term)
+ (name term)
+ (modules term))
 
 (library
  (name backtracking_references)

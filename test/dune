@@ -9,6 +9,11 @@
  (modules example2))
 
 (test
+ (name atomic_term_test)
+ (libraries unification)
+ (modules atomic_term_test))
+
+(test
  (name backtracking_references_test)
  (libraries backtracking_references)
  (modules backtracking_references_test))
