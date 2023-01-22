@@ -117,48 +117,6 @@ assert (
   true)
 ;;
 
-assert (
-  let v1 = Uni.gen_var () in
-  let v2 = Uni.gen_var () in
-  let v3 = Uni.gen_var () in
-  let v4 = Uni.gen_var () in
-  assert (Uni.union v1 v2);
-  assert (Uni.get_value v1 = None);
-  assert (Uni.get_value v2 = None);
-  assert (Uni.get_value v3 = None);
-  assert (Uni.get_value v4 = None);
-
-  assert (Uni.set_value v1 (UVar "Foo"));
-
-  assert (Uni.get_value v1 = Some (UVar "Foo"));
-  assert (Uni.get_value v2 = Some (UVar "Foo"));
-  assert (Uni.get_value v3 = None);
-  assert (Uni.get_value v4 = None);
-
-  assert (Uni.set_value v3 (UVar "Bar"));
-
-  assert (Uni.get_value v1 = Some (UVar "Foo"));
-  assert (Uni.get_value v2 = Some (UVar "Foo"));
-  assert (Uni.get_value v3 = Some (UVar "Bar"));
-  assert (Uni.get_value v4 = None);
-
-  assert (Uni.union v3 v4);
-
-  assert (Uni.get_value v1 = Some (UVar "Foo"));
-  assert (Uni.get_value v2 = Some (UVar "Foo"));
-  assert (Uni.get_value v3 = Some (UVar "Bar"));
-  assert (Uni.get_value v4 = Some (UVar "Bar"));
-
-  assert (not @@ Uni.union v1 v4);
-
-  assert (Uni.get_value v1 = Some (UVar "Foo"));
-  assert (Uni.get_value v2 = Some (UVar "Foo"));
-  assert (Uni.get_value v3 = Some (UVar "Bar"));
-  assert (Uni.get_value v4 = Some (UVar "Bar"));
-
-  true)
-;;
-
 (* Test of union find *)
 assert (
   let v1 = Uni.gen_var () in
@@ -208,9 +166,7 @@ assert (
   assert (Uni.get v3 = None);
   assert (Uni.get v4 = None);
 
-  let v : 'a MyTerm.uterm = UVar "Foo" in
-
-  assert (Uni.set_value v1 v);
+  assert (Uni.set_value v1 (UVar "Foo"));
 
   assert (Uni.get v1 = Some (Var "Foo"));
   assert (Uni.get v2 = Some (Var "Foo"));
