@@ -82,15 +82,12 @@ module Var (Unit : Term) :
     let _, _, oval = find v in
     oval
 
-  let rec not_in_fv (children_of : var Unit.uterm -> 'a list) (x : var)
-      (term : var Unit.uterm) =
+  let rec not_in_fv (x : var) (term : var Unit.uterm) =
     List.for_all
       (fun v ->
         x != v
-        && Option.fold ~none:true
-             ~some:(fun t -> not_in_fv children_of x t)
-             (get_value v))
-      (children_of term)
+        && Option.fold ~none:true ~some:(fun t -> not_in_fv x t) (get_value v))
+      (Unit.children_of term)
 
   let union v1 v2 : bool =
     let rec union v1 v2 : bool =
@@ -101,8 +98,7 @@ module Var (Unit : Term) :
       let oval, unified =
         match (g1, oval1, g2, oval2) with
         | _, None, _, None -> (None, true)
-        | _, Some x, vv, None | vv, None, _, Some x ->
-            (Some x, not_in_fv Unit.children_of vv x)
+        | _, Some x, vv, None | vv, None, _, Some x -> (Some x, not_in_fv vv x)
         | _, Some x, _, Some y -> (Some x, Unit.union union x y)
       in
       if unified then (
