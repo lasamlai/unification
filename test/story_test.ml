@@ -1,7 +1,7 @@
 open Story;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let c1 = checkpoint () in
   let _ = checkpoint () in
   let _ = checkpoint () in
@@ -11,7 +11,7 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let c1 = checkpoint () in
   let _ = checkpoint () in
   let c3 = checkpoint () in
@@ -26,20 +26,20 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let cur = get_current () in
   NoChange = story cur)
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let cur = get_current () in
   let c = checkpoint () in
   cur == c)
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let rec last st =
     match[@warning "-8"] st with
     | Fail (_, NoChange) | Cut (_, NoChange) -> st
@@ -75,7 +75,7 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let rec last st =
     match[@warning "-8"] st with
     | Fail (_, NoChange) | Cut (_, NoChange) -> st
@@ -111,7 +111,7 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let c1 = checkpoint () in
   let c2 = checkpoint () in
   let c3 = checkpoint () in
@@ -142,7 +142,7 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let c1 = checkpoint () in
   let c2 = checkpoint () in
   let c3 = checkpoint () in
@@ -186,7 +186,7 @@ assert (
 ;;
 
 assert (
-  let open Story () in
+  let open Story (struct end) in
   let start = get_current () in
 
   let c1 = checkpoint () in

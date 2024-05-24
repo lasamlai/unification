@@ -16,7 +16,7 @@ module Backtracking_references : sig
   val ( ! ) : 'a href -> 'a
   val ( := ) : 'a href -> 'a -> unit
 end = struct
-  include Story ()
+  include Story (struct end)
 
   exception UseBeforeCreation
 
