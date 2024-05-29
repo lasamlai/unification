@@ -17,6 +17,8 @@ module Term_of_EqType (Eq : EqType) :
   type term = Eq.t
   type 'a uterm = Eq.t
 
+  let unwrap t = t
+  let map _ t = t
   let children_of _ = []
   let build _ a = Some a
   let union _ = Eq.equal
@@ -28,6 +30,8 @@ module Term_of_OrderedType (Ord : OrderedType) :
   type term = Ord.t
   type 'a uterm = Ord.t
 
+  let unwrap t = t
+  let map _ t = t
   let children_of _ = []
   let build _ a = Some a
   let union _ a b = 0 = Ord.compare a b

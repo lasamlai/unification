@@ -5,6 +5,12 @@ module type Term = sig
   type 'a uterm
   (** Description of terms with unifying variables. *)
 
+  val unwrap : term -> term uterm
+  (** [unwrap t] is the first layer of term [t] with subterms [t] substituted. *)
+
+  val map : ('a -> 'b) -> 'a uterm -> 'b uterm
+  (** [map f ut] map ['a uterm] to a ['b uterm] using [f]. *)
+
   val children_of : 'a uterm -> 'a list
   (** [children_of t] is a list of children of term [t]. *)
 

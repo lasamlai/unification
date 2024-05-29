@@ -29,6 +29,9 @@ module type Var = sig
   val var_of_uterm : var uterm -> var
   (** [var_of_uterm u] creates a new variable, which is unified with the term [u]. *)
 
+  val var_of_term : term -> var
+  (** [var_of_term t] creates a new variable, which is unified with the term [t]. *)
+
   val union : var -> var -> bool
   (** [union x1 x2] tries to unify the variables [x1] and [x2] and returns [true] if successful, [false] otherwise. *)
 
@@ -69,6 +72,9 @@ module Var (Unit : Term) :
 
   let gen_var () : var = href (Top (1, None))
   let var_of_uterm t : var = href (Top (1, Some t))
+
+  let rec var_of_term t : var =
+    var_of_uterm @@ Unit.map var_of_term (Unit.unwrap t)
 
   let rec find (v : var) : var * int * var Unit.uterm option =
     match !v with

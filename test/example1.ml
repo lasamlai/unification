@@ -7,6 +7,20 @@ module MyTerm = struct
   (** Description of terms with unifying variables. *)
   type 'a uterm = UVar of string | UImpl of 'a * 'a | UBox of 'a
 
+  (** [unwrap t] is the first layer of term [t] with subterms [t] substituted. *)
+  let unwrap t =
+    match t with
+    | Var v -> UVar v
+    | Impl (t1, t2) -> UImpl (t1, t2)
+    | Box t1 -> UBox t1
+
+  (** [map f ut] map ['a uterm] to a ['b uterm] using [f]. *)
+  let map f t =
+    match t with
+    | UVar v -> UVar v
+    | UImpl (v1, v2) -> UImpl (f v1, f v2)
+    | UBox v1 -> UBox (f v1)
+
   (** `children_of t` is a list of children of term `t`. *)
   let children_of (t : 'a uterm) : 'a list =
     match t with UVar _ -> [] | UImpl (t1, t2) -> [ t1; t2 ] | UBox t -> [ t ]
@@ -356,6 +370,13 @@ assert (
   assert (not @@ Uni.set_value x (UBox x));
 
   Uni.get x = None)
+;;
+
+(* [get] is the inverse function of [var_of_term] *)
+assert (
+  let x = Impl (Var "p", Box (Var "q")) in
+  let y = Option.get @@ Uni.get @@ Uni.var_of_term x in
+  x = y)
 ;;
 
 print_endline "[example 1] OK"

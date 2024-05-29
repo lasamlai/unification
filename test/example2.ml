@@ -7,6 +7,12 @@ module Ty = struct
   type term = ty
   type 'a uterm = Var of var | Impl of 'a * 'a
 
+  let unwrap (t : term) : term uterm =
+    match t with Var v -> Var v | Impl (t1, t2) -> Impl (t1, t2)
+
+  let map f t =
+    match t with Var v -> Var v | Impl (v1, v2) -> Impl (f v1, f v2)
+
   let children_of (t : 'a uterm) : 'a list =
     match t with Var _ -> [] | Impl (t1, t2) -> [ t1; t2 ]
 
@@ -38,6 +44,18 @@ type lam = Var of var | Lam of var * ty * lam | App of lam * lam
 module Lam = struct
   type term = lam
   type 'a uterm = Var of var | Lam of var * VarTy.var * 'a | App of 'a * 'a
+
+  let unwrap (t : term) =
+    match t with
+    | Var x -> Var x
+    | Lam (x, ty, t1) -> Lam (x, VarTy.var_of_term ty, t1)
+    | App (t1, t2) -> App (t1, t2)
+
+  let map f t =
+    match t with
+    | Var x -> Var x
+    | Lam (x, ty, v) -> Lam (x, ty, f v)
+    | App (v1, v2) -> App (f v1, f v2)
 
   let children_of (t : 'a uterm) : 'a list =
     match t with
