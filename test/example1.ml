@@ -364,6 +364,18 @@ assert (
   true)
 ;;
 
+(* Don't allow indirectly recursive terms. *)
+assert (
+  (* Build of term: X1 = X2, X2 = box(X1) *)
+  let x1 = Uni.gen_var () in
+  let x2 = Uni.gen_var () in
+
+  assert (Uni.union x1 x2);
+
+  assert (not @@ Uni.union x2 (Uni.var_of_uterm (UBox x1)));
+  true)
+;;
+
 (* Unallow recursive terms in `set_value` *)
 assert (
   let x = Uni.gen_var () in

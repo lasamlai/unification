@@ -91,6 +91,7 @@ module Var (Unit : Term) :
   let rec not_in_fv (x : var) (term : var Unit.uterm) =
     List.for_all
       (fun v ->
+        let v, _, _ = find v in
         x != v
         && Option.fold ~none:true ~some:(fun t -> not_in_fv x t) (get_value v))
       (Unit.children_of term)
